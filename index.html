@@ -1,0 +1,952 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>五子棋</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .top,
+        .bottom {
+            width: 100%;
+        }
+
+            .top img,
+            .bottom img {
+                width: 100%;
+            }
+
+        .middle {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        table.coordinate {
+            border-collapse: collapse;
+          /*//  width: 100%;
+          //  max-width: 100%;*/
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 4px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+            /*tr:hover {
+            background-color: #f1f1f1;
+        }*/
+
+            td:first-child,
+            th:first-child {
+                width: 40px;
+            }
+
+        input {
+            width: 100%;
+            border: none;
+            line-height: 20px;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+            input:focus-visible {
+                outline: none;
+            }
+
+        button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #d3d3d3;
+            cursor: pointer;
+        }
+
+        .coordinate {
+            display: table;
+            width: 100%;
+        }
+
+            .coordinate th {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .coordinate td:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 10;
+                background-color: #f2f2f2;
+            }
+
+        td:first-child {
+            width: 20px;
+        }
+
+        /* 第二列固定宽度 */
+        td:nth-child(2) {
+            width: 120px;
+        }
+
+        td:nth-child(3) {
+            width: 120px;
+        }
+        td:nth-child(4) {
+            width: 100px;
+        }
+        td:nth-child(5) {
+            width: 100px;
+        }
+        td:nth-child(6) {
+            width: 100px;
+        }
+        td:nth-child(7) {
+            width: 100px;
+        }
+        td:nth-child(8) {
+            width: 100px;
+        }
+        td:nth-child(9) {
+            width: 100px;
+        }
+        td:nth-child(10) {
+            width: 100px;
+        }
+        td:nth-child(11) {
+            width: 100px;
+        }
+        td:nth-child(12) {
+            width: 100px;
+        }
+        td:nth-child(13) {
+            width: 100px;
+        }
+        td:nth-child(14) {
+            width: 100px;
+        }
+        th:first-child {
+            width: 20px;
+        }
+
+
+        th:nth-child(2) {
+            width: 120px;
+        }
+
+        th:nth-child(3) {
+            width: 120px;
+        }
+
+        /*tr:hover td {
+            background-color: transparent;
+        }*/
+
+        .board-container {
+            position: absolute;
+            right: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            padding: 30px;
+            padding-top: 15px;
+            border: 1px solid;
+            flex-direction: column;
+        }
+
+
+
+        .board {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            grid-template-rows: repeat(11, 1fr);
+        }
+
+            /* 棋盘线条 */
+            .board div {
+                border-left: 1px dashed #333;
+                border-bottom: 1px dashed #333;
+                box-sizing: border-box;
+            }
+
+        .horizontal {
+            border: none !important;
+        }
+
+        .vertical {
+            border: none !important;
+        }
+
+        /* 左侧实线 */
+        .board div:nth-child(11n + 1) {
+            /* border-left: 1px solid #333; */
+        }
+
+        /* 下侧实线 */
+        .board div:nth-child(n + 111) {
+            /* border-bottom: 1px solid #333; */
+        }
+
+        /* 棋子样式 */
+        .stone {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .black {
+            background-color: black;
+        }
+
+        .heise {
+            background-color: black;
+        }
+
+        .huise {
+            background-color: #d3d3d3;
+        }
+
+        .white {
+            background-color: white;
+            border: 1px solid #ccc;
+        }
+
+        /* 坐标标签 */
+        .coordinate-label {
+            position: absolute;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+            .coordinate-label.horizontal {
+                top: 300px;
+            }
+
+            .coordinate-label.vertical {
+                left: -20px;
+            }
+
+        .title {
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+
+        table tr::selection {
+            background: none;
+        }
+
+        /* 移除在Firefox中的默认选中样式 */
+        table tr::-moz-selection {
+            background: none;
+        }
+
+        /* 如果你想要确保即使在鼠标点击时也不会有灰色背景 */
+        table tr {
+            -webkit-user-select: none; /* Chrome/Safari/Opera */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE/Edge */
+            user-select: none; /* 全局 */
+        }
+
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #000;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top"><img src="./up.png" alt=""></div>
+    <div class="middle">
+        <table class="coordinate">
+            <thead>
+                <tr>
+                    <th></th> <!-- 空白单元格用于左上角 -->
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>E</th>
+                    <th>F</th>
+                    <th>G</th>
+                    <th>H</th>
+                    <th>I</th>
+                    <th>J</th>
+                    <th>K</th>
+                    <th>L</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 行10 -->
+                <tr>
+                    <td>1</td>
+                    <td></td>
+                    <td></td>
+                    <td id="C1"></td>
+                    <td id="D1"></td>
+                    <td id="E1"></td>
+                    <td id="F1"></td>
+                    <td id="G1"></td>
+                    <td id="H1"></td>
+                    <td id="I1"></td>
+                    <td id="J1"></td>
+                    <td id="K1"></td>
+                    <td id="L1"></td>
+                </tr>
+                <!-- 行9 -->
+                <tr>
+                    <td>2</td>
+                    <td colspan="2"><button id="reset-game">RESTART</button></td>
+
+                    <td id="C2" style="width: 100px;"></td>
+                    <td id="D2"></td>
+                    <td id="E2"></td>
+                    <td id="F2"></td>
+                    <td id="G2"></td>
+                    <td id="H2"></td>
+                    <td id="I2"></td>
+                    <td id="J2"></td>
+                    <td id="K2"></td>
+                    <td id="L2"></td>
+                </tr>
+                <!-- 行8 -->
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" id="input-col" maxlength="2" placeholder="Input C-L"></td>
+                    <td><input type="number" id="input-row" min="1" max="10" placeholder="Input 1-10"></td>
+                    <td id="C3"></td>
+                    <td id="D3"></td>
+                    <td id="E3"></td>
+                    <td id="F3"></td>
+                    <td id="G3"></td>
+                    <td id="H3"></td>
+                    <td id="I3"></td>
+                    <td id="J3"></td>
+                    <td id="K3"></td>
+                    <td id="L3"></td>
+                </tr>
+                <!-- 行7 -->
+                <tr>
+                    <td>4</td>
+                    <td colspan="2"><button id="place-stone">MAKE A MOVE</button></td>
+
+                    <td id="C4" style="width: 100px;"></td>
+                    <td id="D4"></td>
+                    <td id="E4"></td>
+                    <td id="F4"></td>
+                    <td id="G4"></td>
+                    <td id="H4"></td>
+                    <td id="I4"></td>
+                    <td id="J4"></td>
+                    <td id="K4"></td>
+                    <td id="L4"></td>
+                </tr>
+                <!-- 行6 -->
+                <tr>
+                    <td>5</td>
+                    <td colspan="2">Placements</td>
+
+                    <td id="C5" style="width: 100px;"></td>
+                    <td id="D5"></td>
+                    <td id="E5"></td>
+                    <td id="F5"></td>
+                    <td id="G5"></td>
+                    <td id="H5"></td>
+                    <td id="I5"></td>
+                    <td id="J5"></td>
+                    <td id="K5"></td>
+                    <td id="L5"></td>
+                </tr>
+                <!-- 行5-9，用于显示最新四条落子记录 -->
+                <tr>
+                    <td>6</td>
+                    <td></td>
+                    <td></td>
+                    <td id="C6"></td>
+                    <td id="D6"></td>
+                    <td id="E6"></td>
+                    <td id="F6"></td>
+                    <td id="G6"></td>
+                    <td id="H6"></td>
+                    <td id="I6"></td>
+                    <td id="J6"></td>
+                    <td id="K6"></td>
+                    <td id="L6"></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td></td>
+                    <td></td>
+                    <td id="C7"></td>
+                    <td id="D7"></td>
+                    <td id="E7"></td>
+                    <td id="F7"></td>
+                    <td id="G7"></td>
+                    <td id="H7"></td>
+                    <td id="I7"></td>
+                    <td id="J7"></td>
+                    <td id="K7"></td>
+                    <td id="L7"></td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td></td>
+                    <td></td>
+                    <td id="C8"></td>
+                    <td id="D8"></td>
+                    <td id="E8"></td>
+                    <td id="F8"></td>
+                    <td id="G8"></td>
+                    <td id="H8"></td>
+                    <td id="I8"></td>
+                    <td id="J8"></td>
+                    <td id="K8"></td>
+                    <td id="L8"></td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td></td>
+                    <td></td>
+                    <td id="C9"></td>
+                    <td id="D9"></td>
+                    <td id="E9"></td>
+                    <td id="F9"></td>
+                    <td id="G9"></td>
+                    <td id="H9"></td>
+                    <td id="I9"></td>
+                    <td id="J9"></td>
+                    <td id="K9"></td>
+                    <td id="L9"></td>
+                </tr>
+                <!-- 行1 -->
+                <tr>
+                    <td>10</td>
+                    <td></td>
+                    <td></td>
+                    <td id="C10"></td>
+                    <td id="D10"></td>
+                    <td id="E10"></td>
+                    <td id="F10"></td>
+                    <td id="G10"></td>
+                    <td id="H10"></td>
+                    <td id="I10"></td>
+                    <td id="J10"></td>
+                    <td id="K10"></td>
+                    <td id="L10"></td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="board-container" style="display:none">
+            <div class="title">Positional Analysis of Black and White pieces (Scatter Plot)</div>
+            <div class="board" id="board">
+
+                <!-- 生成棋盘格子 -->
+                <script>
+                    const board = document.getElementById('board');
+                    for (let i = 0; i < 121; i++) {
+                        const cell = document.createElement('div');
+                        board.appendChild(cell);
+                    }
+                    // 横坐标标签
+                    for (let i = 0; i < 10; i++) {
+                        const label = document.createElement('div');
+                        label.classList.add('coordinate-label', 'horizontal');
+                        label.style.left = `${(i + 1) * (300 / 11) - 7}px`;
+                        label.textContent = i + 1; // 横坐标改为数字
+                        board.appendChild(label);
+                    }
+                    // 纵坐标标签
+                    for (let i = 0; i < 10; i++) {
+                        const label = document.createElement('div');
+                        label.classList.add('coordinate-label', 'vertical');
+                        label.style.top = `${(9 - i + 1) * (300 / 11) - 10}px`; // 纵坐标从下往上排列
+                        label.textContent = i + 1;
+                        board.appendChild(label);
+                        // 检查是否是最后一个标签，并添加样式
+                        if (i === 9) {  // 10个标签的最后一个是 i = 9
+                            label.style.left = "-25px";  // 应用 left 偏移
+                        }
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+    <div class="bottom"><img src="./down.png" alt=""></div>
+</body>
+<script>
+    function showAlert(str) {
+        // 创建一个弹窗div元素
+        var popup = document.createElement('div');
+        popup.classList.add('popup');
+        // 添加弹窗内容
+        popup.innerHTML = str;
+        // 将弹窗添加到body元素中
+        document.body.appendChild(popup);
+
+        // 在2秒后删除弹窗元素
+        setTimeout(function () {
+            document.body.removeChild(popup);
+        }, 3500);
+    }
+
+
+    const BOARD_SIZE = 10;
+    const boardState = Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(0)); // 用 0 表示空位，1 表示玩家，2 表示电脑
+    let currentPlayer = 1; // 1 表示玩家黑子，2 表示电脑白子
+    const moveHistory = [];
+    let over = false;
+
+    const placeStoneBtn = document.getElementById('place-stone');
+    const resetGameBtn = document.getElementById('reset-game');
+    const inputCol = document.getElementById('input-col');
+    const inputRow = document.getElementById('input-row');
+    let inputcolStr = 'C';//默认C记录当前列标识
+
+    // 定义赢法数组
+    let wins = [];
+    let winCount = 0;
+
+    // 初始化 wins 数组
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        wins[i] = [];
+        for (let j = 0; j < BOARD_SIZE; j++) {
+            wins[i][j] = [];
+        }
+    }
+
+    // 横向赢法
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        for (let j = 0; j <= BOARD_SIZE - 5; j++) {
+            for (let k = 0; k < 5; k++) {
+                wins[i][j + k][winCount] = true;
+            }
+            winCount++;
+        }
+    }
+
+    // 纵向赢法
+    for (let i = 0; i <= BOARD_SIZE - 5; i++) {
+        for (let j = 0; j < BOARD_SIZE; j++) {
+            for (let k = 0; k < 5; k++) {
+                wins[i + k][j][winCount] = true;
+            }
+            winCount++;
+        }
+    }
+
+    // 正斜 (\) 赢法
+    for (let i = 0; i <= BOARD_SIZE - 5; i++) {
+        for (let j = 0; j <= BOARD_SIZE - 5; j++) {
+            for (let k = 0; k < 5; k++) {
+                wins[i + k][j + k][winCount] = true;
+            }
+            winCount++;
+        }
+    }
+
+    // 反斜 (/) 赢法
+    for (let i = 4; i < BOARD_SIZE; i++) {
+        for (let j = 0; j <= BOARD_SIZE - 5; j++) {
+            for (let k = 0; k < 5; k++) {
+                wins[i - k][j + k][winCount] = true;
+            }
+            winCount++;
+        }
+    }
+
+    // 赢法统计数组
+    let myWin = [];
+    let compWin = [];
+    for (let i = 0; i < winCount; i++) {
+        myWin[i] = 0;
+        compWin[i] = 0;
+    }
+    ////字母转换数字
+    function letterToNumber(letter) {
+        // 将字母转换为对应的数字，A=1, B=2, ..., L=12，这里减去64是因为大写字母A的ASCII码是65
+        var number = letter.charCodeAt(0) - 64;
+        // 检查数字是否在C到L的范围内，即3到12
+        if (number >= 3 && number <= 12) {
+            // 根据规则减去2，将C转换为1，D转换为2，依此类推
+            return number - 2;
+        }
+    }
+    ////
+    function placeStone() {
+        if (over) {
+            return;
+        }
+        ///增加检测输入值不能超过区间
+        var regex = /^[C-L]$/;
+        if (!regex.test(inputCol.value)) {
+            showAlert('Please enter the correct coordinates!C-L');
+        //    alert('Please enter the correct coordinates!大写');
+            return;
+        }
+        inputcolStr = inputCol.value;//保存横坐标位置
+        if (currentPlayer !== 1) {
+            return;
+        }
+
+        const colInput = letterToNumber(inputcolStr);// parseInt(inputCol.value);
+        console.log("字母转城数字为" + colInput);
+        const rowInput = parseInt(inputRow.value);
+        const colIndex = colInput - 1;
+        const rowIndex = BOARD_SIZE - rowInput; // 纵坐标从下往上排列
+
+        if (isNaN(colIndex) || colIndex < 0 || colIndex >= BOARD_SIZE || isNaN(rowIndex) || rowIndex < 0 || rowIndex >= BOARD_SIZE) {
+            showAlert('Please enter the correct coordinates!');
+           // alert('Please enter the correct coordinates!');
+            return;
+        }
+        if (boardState[rowIndex][colIndex] !== 0) {
+            showAlert('There are already chess pieces in this position!');
+          //  alert('There are already chess pieces in this position!');
+            return;
+        }
+
+        // 更新棋盘状态
+        boardState[rowIndex][colIndex] = currentPlayer;
+
+        // 绘制棋子
+        addClassToTd(inputcolStr + rowInput, currentPlayer);
+        drawStone(colIndex, rowIndex, currentPlayer);
+
+        // 更新赢法统计
+        for (let k = 0; k < winCount; k++) {
+            if (wins[rowIndex][colIndex][k]) {
+                myWin[k]++;
+                compWin[k] = 6; // 6 表示不可能再赢
+                if (myWin[k] === 5) {
+
+                    showAlert('You win!');
+                    over = true;
+                }
+            }
+        }
+
+        // 记录历史
+        moveHistory.unshift(`Black Chess：${inputcolStr}, ${rowInput}`);
+        if (moveHistory.length > 4) {
+            moveHistory.pop();
+        }
+        updateMoveHistory();
+
+        if (!over) {
+            currentPlayer = 2; // 轮到电脑
+            setTimeout(function () {
+                aiMove();
+            }, 2500);
+
+          
+        }
+
+        // 清空输入
+        inputCol.value = '';
+        inputRow.value = '';
+    }
+
+    function aiMove() {
+        if (over) {
+            return;
+        }
+
+        let myScore = [];
+        let computerScore = [];
+        let max = 0;
+        let u = 0, v = 0;
+
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            myScore[i] = [];
+            computerScore[i] = [];
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                myScore[i][j] = 0;
+                computerScore[i][j] = 0;
+            }
+        }
+
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                if (boardState[i][j] === 0) {
+                    for (let k = 0; k < winCount; k++) {
+                        if (wins[i][j][k]) {
+                            if (myWin[k] === 1) {
+                                myScore[i][j] += 200;
+                            } else if (myWin[k] === 2) {
+                                myScore[i][j] += 400;
+                            } else if (myWin[k] === 3) {
+                                myScore[i][j] += 2000;
+                            } else if (myWin[k] === 4) {
+                                myScore[i][j] += 10000;
+                            }
+
+                            if (compWin[k] === 1) {
+                                computerScore[i][j] += 220;
+                            } else if (compWin[k] === 2) {
+                                computerScore[i][j] += 420;
+                            } else if (compWin[k] === 3) {
+                                computerScore[i][j] += 2100;
+                            } else if (compWin[k] === 4) {
+                                computerScore[i][j] += 20000;
+                            }
+                        }
+                    }
+
+                    if (myScore[i][j] > max) {
+                        max = myScore[i][j];
+                        u = i;
+                        v = j;
+                    } else if (myScore[i][j] === max) {
+                        if (computerScore[i][j] > computerScore[u][v]) {
+                            u = i;
+                            v = j;
+                        }
+                    }
+
+                    if (computerScore[i][j] > max) {
+                        max = computerScore[i][j];
+                        u = i;
+                        v = j;
+                    } else if (computerScore[i][j] === max) {
+                        if (myScore[i][j] > myScore[u][v]) {
+                            u = i;
+                            v = j;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 更新棋盘状态
+        boardState[u][v] = 2; // 2 表示电脑
+
+        // 绘制棋子
+
+
+        ///获取对应数据组装
+
+        var letter = String.fromCharCode(64 + v + 1 + 2);
+
+        addClassToTd(letter + (BOARD_SIZE - u), 2);
+        drawStone(v, u, 2);
+
+        // 更新赢法统计
+        for (let k = 0; k < winCount; k++) {
+            if (wins[u][v][k]) {
+                compWin[k]++;
+                myWin[k] = 6; // 玩家不可能再在此赢
+                if (compWin[k] === 5) {
+                    showAlert('The computer won!');
+                    over = true;
+                }
+            }
+        }
+
+        // 记录历史
+        const colInput = v + 1;
+        const rowInput = BOARD_SIZE - u;
+        moveHistory.unshift(`White Chess (AI)：${letter}, ${rowInput}`);
+        if (moveHistory.length > 4) {
+            moveHistory.pop();
+        }
+        updateMoveHistory();
+
+        if (!over) {
+            currentPlayer = 1; // 轮到玩家
+        }
+    }
+    //增加表格填充颜色
+    function addClassToTd(id, player) {
+        console.log("传入的ID是" + id);
+        var tdElement = document.getElementById(id);
+        if (tdElement) {
+            if (player == 1) {
+
+
+                tdElement.classList.add('heise');
+            }
+            else {
+                tdElement.classList.add('huise');
+            }
+        }
+    }
+    ////
+    function drawStone(colIndex, rowIndex, player) {
+        const stone = document.createElement('div');
+        stone.classList.add('stone', player === 1 ? 'black' : 'white');
+        const cellSize = 300 / 11;
+        stone.style.left = `${(colIndex + 1) * cellSize}px`;
+        stone.style.top = `${(rowIndex + 1) * cellSize}px`;
+        board.appendChild(stone);
+    }
+
+    function updateMoveHistory() {
+        const tableRows = document.querySelectorAll('table.coordinate tbody tr');
+        // 获取第6至第9行
+        const moveRows = [tableRows[5], tableRows[6], tableRows[7], tableRows[8]];
+        for (let i = 0; i < moveRows.length; i++) {
+            const row = moveRows[i];
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 3) {
+                // 清空之前的内容
+                cells[1].innerText = '';
+                cells[2].innerText = '';
+                // 填入新的内容
+                const move = moveHistory[i];
+                if (move) {
+                    const [player, position] = move.split('：');
+                    cells[1].innerText = player;
+                    cells[2].innerText = position;
+                }
+            }
+        }
+    }
+
+    function resetGame() {
+        // 清空棋盘状态
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                boardState[i][j] = 0;
+            }
+        }
+        // 清除棋子
+        const stones = document.querySelectorAll('.stone');
+        stones.forEach(stone => stone.remove());
+        // 重置玩家
+        currentPlayer = 1;
+        over = false;
+        // 清空历史
+        moveHistory.length = 0;
+        updateMoveHistory();
+        // 重置赢法统计数组
+        for (let i = 0; i < winCount; i++) {
+            myWin[i] = 0;
+            compWin[i] = 0;
+        }
+        ///重置棋盘
+        const tds = document.querySelectorAll('td');
+
+        // 遍历td元素
+        tds.forEach(td => {
+            // 移除'heise'类
+            td.classList.remove('heise');
+            // 移除'huise'类
+            td.classList.remove('huise');
+        });
+        // 启用按钮
+        placeStoneBtn.disabled = false;
+    }
+
+    placeStoneBtn.addEventListener('click', placeStone);
+    resetGameBtn.addEventListener('click', resetGame);
+</script>
+
+
+</html>
